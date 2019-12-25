@@ -2,13 +2,11 @@ const Web3 = require('web3');
 const fs = require('fs');
 const mongoose = require('mongoose');
 
-const settlements = require('./settlements.js');
 
-const loopringAbi = JSON.parse(fs.readFileSync('./abi/ILoopringV3.abi').toString());
-const registryAbi = JSON.parse(fs.readFileSync('./abi/IUniversalRegistry.abi').toString());
-const exchangeAbi = JSON.parse(fs.readFileSync('./abi/IExchangeV3.abi').toString());
+// const loopringAbi = JSON.parse(fs.readFileSync('./abi/ILoopringV3.abi').toString());
+// const exchangeAbi = JSON.parse(fs.readFileSync('./abi/IExchangeV3.abi').toString());
 
-// console.log(exchangeAbi);
+const UniversalRegistry = require('./UniversalRegistry.js')
 
 const methodMap = {
     "0x6cfd80c9": "updateAccountAndDeposit",
@@ -16,21 +14,37 @@ const methodMap = {
 };
 
 const getExchanges = async (registryContract) => {
-    return registryContract.methods.exchanges(0).call();
+    const e1 = await registryContract.methods.exchanges(0).call();
+    return [e1]
 }
 
-const main = async (loopringAddr, registryAddr, exchangeAddr, blockHeight) => {
-    settlements.info("hi");
+const main = async (loopringAddr, exchangeAddr, blockHeight) => {
+
+    var lastBlock = 8967526; // registry is deployed
+    var latestBlock = 8967536;
+    var exchanges = [];
 
     const web3 = new Web3('http://18.162.247.214:8545');
-    const loopring = new web3.eth.Contract(loopringAbi, loopringAddr);
-    const registry = new web3.eth.Contract(registryAbi, registryAddr);
+    const registry = UniversalRegistry(web3);
 
-    // console.log(registry);
+    while(lastBlock <= latestBlock) {
+        console.log("block#", lastBlock, " ...");
 
-    const exchanges = await getExchanges(registry);
+        const resp = await registry.processBlock(lastBlock);
+        // console.log(resp.exchanges);
 
-    console.log(exchanges);
+        lastBlock++;
+
+        console.log("block#", lastBlock, " done");
+
+    }
+
+
+    // const exchanges = await getExchanges(registry);
+
+    // for (var i = 0; i < exchanges.length; i++) {
+    //     console.log('====================\n\n', exchanges[i]);
+    // }
 
 
 
@@ -53,7 +67,6 @@ const main = async (loopringAddr, registryAddr, exchangeAddr, blockHeight) => {
 
 main(
     "0x8745074248634f37327Ee748137C8b31238002C7",
-    "0x4c2103152a1a402af283fa52903569f05477611f",
     "0x7D3D221A8D8AbDd868E8e88811fFaF033e68E108",
     9150280
 );
