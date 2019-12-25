@@ -20,22 +20,35 @@ const getExchanges = async (registryContract) => {
 
 const main = async (loopringAddr, exchangeAddr, blockHeight) => {
 
-    var lastBlock = 8967526; // registry is deployed
-    var latestBlock = 8967536;
+    var lastProcessedBlock = 8967525; // last processed block
+    var latestBlock = lastProcessedBlock + 1;
     var exchanges = [];
+
+    console.log("exchanges:", exchanges, "last block:", lastProcessedBlock);
 
     const web3 = new Web3('http://18.162.247.214:8545');
     const registry = UniversalRegistry(web3);
 
-    while(lastBlock <= latestBlock) {
-        console.log("block#", lastBlock, " ...");
+    while (lastProcessedBlock <= latestBlock) {
+        if (lastProcessedBlock == latestBlock) {
+            // update latestBlock
+            // latestBlock = lastProcessedBlock + 1;
+        } else {
+            lastProcessedBlock += 1;
+            console.log("block#", lastProcessedBlock, " ...");
 
-        const resp = await registry.processBlock(lastBlock);
-        // console.log(resp.exchanges);
+            const resp = await registry.processBlock(lastProcessedBlock);
 
-        lastBlock++;
+            // update the exchang lists.
+            exchanges = exchanges.concat(resp.exchanges);
+            console.log("exchanges:", exchanges);
 
-        console.log("block#", lastBlock, " done");
+
+
+
+            console.log("block#", lastProcessedBlock, " done");
+
+        }
 
     }
 
