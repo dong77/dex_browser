@@ -1,8 +1,11 @@
 const fs = require('fs');
+const Blocks = require('../schema/Blocks');
 
-const Exchange30 = (web3, address) => {
+const Exchange30 = (web3, db, address) => {
     const abi = JSON.parse(fs.readFileSync('./contracts/abi/IExchangeV3.abi').toString());
     const contract = new web3.eth.Contract(abi, address);
+
+    const blocks = Blocks(db);
 
     return {
         address: address,
@@ -19,13 +22,16 @@ const Exchange30 = (web3, address) => {
             for (var i = 0; i < events.length; i++) {
                 const e = events[i];
                 if (e.event == "BlockCommitted") {
-                    eventObjects.push({
+                    const block = {
                         type: e.event,
                         exchange: address,
                         committedAt: e.blockNumber,
                         blockIdx: e.returnValues.blockIdx,
                         transactionHash: e.transactionHash
-                    });
+                    };
+                    eventObjects.push(block);
+                    blocks.saveBlockCommitted(block)
+
                 } else if (e.event === "BlockVerified") {
                     eventObjects.push({
                         type: e.event,
