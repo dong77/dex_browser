@@ -11,12 +11,16 @@ const Blocks = (connection) => {
         committedAt: Number,
         verifiedAt: Number,
         finalizedAt: Number,
-        transactionHash: String
+        txHash: String
     });
 
     const Block = mongoose.model('Block', schema)
 
     const saveBlockCommitted = async (block) => {
+        await Block.deleteMany({
+            exchange: block.exchange,
+            blockIdx: { $gte: block.blockIdx }
+        });
         await new Block({
             exchange: block.exchange,
             blockIdx: block.blockIdx,
@@ -24,25 +28,25 @@ const Blocks = (connection) => {
             blockSize: block.blockSize,
             blockVersion: block.blockVersion,
             committedAt: block.committedAt,
-            transactionHash: block.transactionHash,
+            txHash: block.transactionHash,
         }).save();
     }
 
     const saveBlockVerified = async (block) => {
         await Block.updateOne({
             exchange: block.exchange,
-            blockIdx: block.Idx
+            blockIdx: block.blockIdx
         }, {
-            verifiedAt: block.committedAt
+            verifiedAt: block.verifiedAt
         });
     }
 
     const saveBlockFinalized = async (block) => {
         await Block.updateOne({
             exchange: block.exchange,
-            blockIdx: block.Idx
+            blockIdx: block.blockIdx
         }, {
-            finalizedAt: block.committedAt
+            finalizedAt: block.finalizedAt
         });
     }
 

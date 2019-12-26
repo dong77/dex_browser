@@ -17,7 +17,6 @@ const Exchange30 = (web3, db, address) => {
                 fromBlock: block,
                 toBlock: block
             });
-
             var eventObjects = [];
             for (var i = 0; i < events.length; i++) {
                 const e = events[i];
