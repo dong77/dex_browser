@@ -25,7 +25,7 @@ const processBlockchain = async (db, web3, startBlock) => {
     const registry = UniversalRegistry(web3);
 
     var block = startBlock; // last processed block
-    var latestBlock = 9165663 ;
+    var latestBlock = startBlock + 1;
     var exchanges = new Map();
 
     // Load saved exchange lists
@@ -37,33 +37,39 @@ const processBlockchain = async (db, web3, startBlock) => {
 
     console.log("starting from last block:", block);
 
-    while (block <= latestBlock) {
-        if (block == latestBlock) {
-            // update latestBlock
-            // latestBlock = block + 1;
-            return;
-        } else {
-            block += 1;
-            // console.log("block#", block, " ...");
-
-            // update the exchang lists.
-            const resp = await registry.processBlock(block);
-            for (var i = 0; i < resp.exchanges.length; i++) {
-                const exchange = resp.exchanges[i];
-                // console.log("found new exchange:", exchange);
-                exchanges.set(exchange, Exchange30(web3, db, exchange));
-            }
-
-            exchanges.forEach(async (exchange, address, _) => {
-                // console.log("exchange:", address, "...")
-                const resp = await exchange.processBlock(block);
-                // console.log(resp);
-                // console.log("exchange:", address, "done")
-
-            });
-            // console.log("block#", block, " done");
-        }
+    function sleep(ms) {
+        const time = 15000;
+        console.log("sleeping", time, "milliseconds.. / height", latestBlock)
+        return new Promise(resolve => setTimeout(resolve, time));
     }
+
+    while (block <= latestBlock) {
+        while (block == latestBlock) {
+            latestBlock = await web3.eth.getBlockNumber();
+            if (block == latestBlock) { await sleep(); }
+        }
+
+        block += 1;
+        // console.log("block#", block, " ...");
+
+        // update the exchang lists.
+        const resp = await registry.processBlock(block);
+        for (var i = 0; i < resp.exchanges.length; i++) {
+            const exchange = resp.exchanges[i];
+            // console.log("found new exchange:", exchange);
+            exchanges.set(exchange, Exchange30(web3, db, exchange));
+        }
+
+        exchanges.forEach(async (exchange, address, _) => {
+            // console.log("exchange:", address, "...")
+            const resp = await exchange.processBlock(block);
+            // console.log(resp);
+            // console.log("exchange:", address, "done")
+
+        });
+        // console.log("block#", block, " done");
+    }
+
 }
 
 const main = async () => {
@@ -78,7 +84,7 @@ const main = async () => {
         console.log("db connected:", mongodbUri);
     });
 
-    await processBlockchain(db, web3, 9165532- 1);
+    await processBlockchain(db, web3, 9165771 - 1);
 }
 
 main();
