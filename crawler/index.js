@@ -25,7 +25,7 @@ const main = async () => {
     const web3 = new Web3('http://18.162.247.214:8545');
     const registry = UniversalRegistry(web3);
 
-    var block = 9164649; // last processed block
+    var block = 9164748; // last processed block
     var latestBlock = block + 1;
     var exchanges = new Map();
 
@@ -42,6 +42,7 @@ const main = async () => {
         if (block == latestBlock) {
             // update latestBlock
             // latestBlock = block + 1;
+            return;
         } else {
             block += 1;
             console.log("block#", block, " ...");
@@ -54,9 +55,9 @@ const main = async () => {
                 exchanges.set(exchange, Exchange30(web3, exchange));
             }
 
-            exchanges.forEach((exchange, address, _) => {
+            exchanges.forEach(async (exchange, address, _) => {
                 console.log("exchange:", address, "...")
-                exchange.processBlock(block);
+                await exchange.processBlock(block);
                 console.log("exchange:", address, "done")
 
             });
