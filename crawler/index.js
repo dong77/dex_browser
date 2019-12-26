@@ -57,7 +57,7 @@ const processBlockchain = async (db, web3, startBlock) => {
             exchanges.forEach(async (exchange, address, _) => {
                 console.log("exchange:", address, "...")
                 const resp = await exchange.processBlock(block);
-                // console.log(resp);
+                console.log(resp);
                 console.log("exchange:", address, "done")
 
             });
@@ -78,7 +78,7 @@ const main = async () => {
         console.log("db connected:", mongodbUri);
     });
 
-    await processBlockchain(db, web3, 9164812);
+    await processBlockchain(db, web3, 9165448 - 1);
 }
 
 main();

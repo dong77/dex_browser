@@ -22,19 +22,25 @@ const Exchange30 = (web3, db, address) => {
             for (var i = 0; i < events.length; i++) {
                 const e = events[i];
                 if (e.event == "BlockCommitted") {
+
+                    const input = (await web3.eth.getTransaction(e.transactionHash)).input;
+
                     const block = {
-                        type: e.event,
                         exchange: address,
                         committedAt: e.blockNumber,
                         blockIdx: e.returnValues.blockIdx,
-                        transactionHash: e.transactionHash
+                        blockType: "Deposits",
+                        blockSize: 100,
+                        blockVersion: 0,
+                        transactionHash: e.transactionHash,
                     };
+
+                    await blocks.saveBlockCommitted(block)
+
                     eventObjects.push(block);
-                    blocks.saveBlockCommitted(block)
 
                 } else if (e.event === "BlockVerified") {
                     eventObjects.push({
-                        type: e.event,
                         exchange: address,
                         verifiedAt: e.blockNumber,
                         blockIdx: e.returnValues.blockIdx

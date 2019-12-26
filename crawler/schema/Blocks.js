@@ -4,40 +4,34 @@ const Schema = mongoose.Schema;
 const Blocks = (connection) => {
     const schema = new Schema({
         exchange: String,
-        blockIdx: String,
-        type: String,
+        blockIdx: Number,
+        blockType: String,
+        blockSize: Number,
+        blockVersion: Number,
         committedAt: String,
         verifiedAt: String,
         finalizedAt: String,
-        transaction: String
+        transactionHash: String
+
     });
 
     const Block = mongoose.model('Block', schema)
 
     const saveBlockCommitted = async (block) => {
-        // eventObjects.push({
-        //            type: e.event,
-        //            exchange: address,
-        //            committedAt: e.blockNumber,
-        //            blockIdx: e.returnValues.blockIdx,
-        //            transactionHash: e.transactionHash
-        //        });
-
-        const instance = new Block({
+        await new Block({
             exchange: block.exchange,
-            blockIdx: block.blockIdx,
-            type: "",
+            blockIdx: parseInt(block.blockIdx),
+            blockType: block.blockType,
+            blockSize: block.blockSize,
+            blockVersion: block.blockVersion,
             committedAt: block.committedAt,
-            transaction: block.transactionHash
-        });
-
-        await instance.save();
+            transactionHash: block.transactionHash,
+        }).save();
     }
-
 
     return {
         schema: schema,
-        model: Block,
+        Block: Block,
         saveBlockCommitted: saveBlockCommitted
     };
 }
