@@ -22,7 +22,7 @@ const Exchange30 = (web3, address) => {
                     eventObjects.push({
                         type: e.event,
                         exchange: address,
-                        commitedAt: e.blockNumber,
+                        committedAt: e.blockNumber,
                         blockIdx: e.returnValues.blockIdx,
                         transactionHash: e.transactionHash
                     });
@@ -32,7 +32,6 @@ const Exchange30 = (web3, address) => {
                         exchange: address,
                         verifiedAt: e.blockNumber,
                         blockIdx: e.returnValues.blockIdx
-
                     });
                 } else if (e.event === "BlockFinalized") {
                     eventObjects.push({
@@ -64,7 +63,7 @@ const Exchange30 = (web3, address) => {
                         amount: e.returnValues.amount
                     });
                 } else {
-                    // console.log(e);
+                    console.warn("skip event of type", e.event);
                 }
             }
 
