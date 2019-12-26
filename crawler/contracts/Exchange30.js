@@ -20,34 +20,32 @@ const Exchange30 = (web3, db, address) => {
             var eventObjects = [];
             for (var i = 0; i < events.length; i++) {
                 const e = events[i];
-                if (e.event == "BlockCommitted") {
-
+                console.log(e)
+                const blockNumber = parseInt(e.blockNumber);
+                const blockIdx = parseInt(e.returnValues.blockIdx);
+                if (e.event === "BlockCommitted") {
                     const input = (await web3.eth.getTransaction(e.transactionHash)).input;
-
-                    const block = {
+                    await blocks.saveBlockCommitted({
                         exchange: address,
-                        committedAt: parseInt(e.blockNumber),
-                        blockIdx: parseInt(e.returnValues.blockIdx),
+                        committedAt: blockNumber,
+                        blockIdx: blockIdx,
                         blockType: "Deposits",
                         blockSize: 100,
                         blockVersion: 0,
                         transactionHash: e.transactionHash,
-                    };
-                    await blocks.saveBlockCommitted(block)
+                    })
                 } else if (e.event === "BlockVerified") {
-                   const block = {
+                    await blocks.saveBlockVerified({
                         exchange: address,
-                        blockIdx: parseInt(e.returnValues.blockIdx),
-                        verifiedAt: parseInt(e.blockNumber)
-                    };
-                    await blocks.saveBlockVerified(block);
+                        blockIdx: blockIdx,
+                        verifiedAt: blockNumber
+                    });
                 } else if (e.event === "BlockFinalized") {
-                    const finalized = {
+                    await blocks.saveBlockFinalized({
                         exchange: address,
-                        blockIdx: parseInt(e.returnValues.blockIdx),
-                        finalizedAt: parseInt(e.blockNumber)
-                    };
-                    await blocks.saveBlockFinalized(block);
+                        blockIdx: blockIdx,
+                        finalizedAt: blockNumber
+                    });
                 } else if (e.event === "DepositRequested") {
                     eventObjects.push({
                         type: e.event,

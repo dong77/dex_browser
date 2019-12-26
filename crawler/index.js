@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 // const loopringAbi = JSON.parse(fs.readFileSync('./abi/ILoopringV3.abi').toString());
 // const exchangeAbi = JSON.parse(fs.readFileSync('./abi/IExchangeV3.abi').toString());
 
-const mongodbUri = "mongodb://localhost:32768/test";
+const mongodbUri = "mongodb://localhost:32768/test2";
 const UniversalRegistry = require('./contracts/UniversalRegistry.js');
 const Loopring3 = require('./contracts/Loopring3.js');
 const Exchange30 = require('./contracts/Exchange30.js');
@@ -25,7 +25,7 @@ const processBlockchain = async (db, web3, startBlock) => {
     const registry = UniversalRegistry(web3);
 
     var block = startBlock; // last processed block
-    var latestBlock = block + 1;
+    var latestBlock = 9165470;block + 1;
     var exchanges = new Map();
 
     // Load saved exchange lists
@@ -78,7 +78,7 @@ const main = async () => {
         console.log("db connected:", mongodbUri);
     });
 
-    await processBlockchain(db, web3, 9165448 - 1);
+    await processBlockchain(db, web3, 9164448 - 1);
 }
 
 main();

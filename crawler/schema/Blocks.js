@@ -8,10 +8,10 @@ const Blocks = (connection) => {
         blockType: String,
         blockSize: Number,
         blockVersion: Number,
+        txHash: String,
         committedAt: Number,
         verifiedAt: Number,
-        finalizedAt: Number,
-        txHash: String
+        finalizedAt: Number
     });
 
     const Block = mongoose.model('Block', schema)
@@ -27,9 +27,10 @@ const Blocks = (connection) => {
             blockType: block.blockType,
             blockSize: block.blockSize,
             blockVersion: block.blockVersion,
-            committedAt: block.committedAt,
             txHash: block.transactionHash,
+            committedAt: block.committedAt,
         }).save();
+        console.log("block committed:", block.blockIdx);
     }
 
     const saveBlockVerified = async (block) => {
@@ -39,6 +40,7 @@ const Blocks = (connection) => {
         }, {
             verifiedAt: block.verifiedAt
         });
+        console.log("block verified:", block.blockIdx);
     }
 
     const saveBlockFinalized = async (block) => {
@@ -48,6 +50,7 @@ const Blocks = (connection) => {
         }, {
             finalizedAt: block.finalizedAt
         });
+        console.log("block finalized:", block.blockIdx);
     }
 
     return {
