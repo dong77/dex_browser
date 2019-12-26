@@ -25,7 +25,7 @@ const processBlockchain = async (db, web3, startBlock) => {
     const registry = UniversalRegistry(web3);
 
     var block = startBlock; // last processed block
-    var latestBlock = 9165470;block + 1;
+    var latestBlock = 9165663 ;
     var exchanges = new Map();
 
     // Load saved exchange lists
@@ -44,24 +44,24 @@ const processBlockchain = async (db, web3, startBlock) => {
             return;
         } else {
             block += 1;
-            console.log("block#", block, " ...");
+            // console.log("block#", block, " ...");
 
             // update the exchang lists.
             const resp = await registry.processBlock(block);
             for (var i = 0; i < resp.exchanges.length; i++) {
                 const exchange = resp.exchanges[i];
-                console.log("found new exchange:", exchange);
+                // console.log("found new exchange:", exchange);
                 exchanges.set(exchange, Exchange30(web3, db, exchange));
             }
 
             exchanges.forEach(async (exchange, address, _) => {
-                console.log("exchange:", address, "...")
+                // console.log("exchange:", address, "...")
                 const resp = await exchange.processBlock(block);
-                console.log(resp);
-                console.log("exchange:", address, "done")
+                // console.log(resp);
+                // console.log("exchange:", address, "done")
 
             });
-            console.log("block#", block, " done");
+            // console.log("block#", block, " done");
         }
     }
 }
@@ -78,7 +78,7 @@ const main = async () => {
         console.log("db connected:", mongodbUri);
     });
 
-    await processBlockchain(db, web3, 9164448 - 1);
+    await processBlockchain(db, web3, 9165532- 1);
 }
 
 main();
