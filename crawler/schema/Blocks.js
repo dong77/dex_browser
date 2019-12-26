@@ -30,7 +30,7 @@ const Blocks = (connection) => {
             txHash: block.transactionHash,
             committedAt: block.committedAt,
         }).save();
-        console.log("block committed:", block.blockIdx);
+        console.log("block", block.blockIdx, "committed / height", block.committedAt);
     }
 
     const saveBlockVerified = async (block) => {
@@ -40,7 +40,7 @@ const Blocks = (connection) => {
         }, {
             verifiedAt: block.verifiedAt
         });
-        console.log("block verified:", block.blockIdx);
+        console.log("block", block.blockIdx, "verified  / height", block.verifiedAt);
     }
 
     const saveBlockFinalized = async (block) => {
@@ -50,7 +50,7 @@ const Blocks = (connection) => {
         }, {
             finalizedAt: block.finalizedAt
         });
-        console.log("block finalized:", block.blockIdx);
+        console.log("block", block.blockIdx, "finalized / height", block.finalizedAt);
     }
 
     return {

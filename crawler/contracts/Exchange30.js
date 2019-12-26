@@ -1,11 +1,13 @@
 const fs = require('fs');
 const Blocks = require('../schema/Blocks');
+const Transfers = require('../schema/Transfers');
 
 const Exchange30 = (web3, db, address) => {
     const abi = JSON.parse(fs.readFileSync('./contracts/abi/IExchangeV3.abi').toString());
     const contract = new web3.eth.Contract(abi, address);
 
     const blocks = Blocks(db);
+    const transfers = Transfers(db);
 
     return {
         address: address,
