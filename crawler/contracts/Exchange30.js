@@ -14,13 +14,62 @@ const Exchange30 = (web3, address) => {
                 fromBlock: block,
                 toBlock: block
             });
+
+            var eventObjects = [];
             for (var i = 0; i < events.length; i++) {
-                const event = events[i];
-                console.log(event.transactionIndex);
-                console.log(event.event);
-                console.log(event.transactionHash);
-                console.log(event.returnValues.blockIdx);
-                console.log(event.blockNumber);
+                const e = events[i];
+                if (e.event == "BlockCommitted") {
+                    eventObjects.push({
+                        type: e.event,
+                        exchange: address,
+                        commitedAt: e.blockNumber,
+                        blockIdx: e.returnValues.blockIdx,
+                        transactionHash: e.transactionHash
+                    });
+                } else if (e.event === "BlockVerified") {
+                    eventObjects.push({
+                        type: e.event,
+                        exchange: address,
+                        verifiedAt: e.blockNumber,
+                        blockIdx: e.returnValues.blockIdx
+
+                    });
+                } else if (e.event === "BlockFinalized") {
+                    eventObjects.push({
+                        type: e.event,
+                        exchange: address,
+                        finalizedAt: e.blockNumber,
+                        blockIdx: e.returnValues.blockIdx
+                    });
+                } else if (e.event === "DepositRequested") {
+                    eventObjects.push({
+                        type: e.event,
+                        exchange: address,
+                        requestAt: e.blockNumber,
+                        requestIdx: e.returnValues.depositIdx,
+                        accountId: e.returnValues.accountID,
+                        tokenId: e.returnValues.tokenID,
+                        amount: e.returnValues.amount,
+                        pubKeyX: e.returnValues.pubKeyX,
+                        pubKeyY: e.returnValues.pubKeyY
+                    });
+                } else if (e.event === "WithdrawalRequested") {
+                    eventObjects.push({
+                        type: e.event,
+                        exchange: address,
+                        requestAt: e.blockNumber,
+                        requestIdx: e.returnValues.withdrawalIdx,
+                        accountId: e.returnValues.accountID,
+                        tokenId: e.returnValues.tokenID,
+                        amount: e.returnValues.amount
+                    });
+                } else {
+                    // console.log(e);
+                }
+            }
+
+            return {
+                events: eventObjects
             }
         }
     };

@@ -25,7 +25,8 @@ const main = async () => {
     const web3 = new Web3('http://18.162.247.214:8545');
     const registry = UniversalRegistry(web3);
 
-    var block = 9164748; // last processed block
+    var block =
+9164812; // last processed block
     var latestBlock = block + 1;
     var exchanges = new Map();
 
@@ -57,7 +58,8 @@ const main = async () => {
 
             exchanges.forEach(async (exchange, address, _) => {
                 console.log("exchange:", address, "...")
-                await exchange.processBlock(block);
+                const resp = await exchange.processBlock(block);
+                console.log(resp);
                 console.log("exchange:", address, "done")
 
             });
