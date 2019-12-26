@@ -8,11 +8,10 @@ const Blocks = (connection) => {
         blockType: String,
         blockSize: Number,
         blockVersion: Number,
-        committedAt: String,
-        verifiedAt: String,
-        finalizedAt: String,
+        committedAt: Number,
+        verifiedAt: Number,
+        finalizedAt: Number,
         transactionHash: String
-
     });
 
     const Block = mongoose.model('Block', schema)
@@ -20,7 +19,7 @@ const Blocks = (connection) => {
     const saveBlockCommitted = async (block) => {
         await new Block({
             exchange: block.exchange,
-            blockIdx: parseInt(block.blockIdx),
+            blockIdx: block.blockIdx,
             blockType: block.blockType,
             blockSize: block.blockSize,
             blockVersion: block.blockVersion,
@@ -29,10 +28,30 @@ const Blocks = (connection) => {
         }).save();
     }
 
+    const saveBlockVerified = async (block) => {
+        await Block.updateOne({
+            exchange: block.exchange,
+            blockIdx: block.Idx
+        }, {
+            verifiedAt: block.committedAt
+        });
+    }
+
+    const saveBlockFinalized = async (block) => {
+        await Block.updateOne({
+            exchange: block.exchange,
+            blockIdx: block.Idx
+        }, {
+            finalizedAt: block.committedAt
+        });
+    }
+
     return {
         schema: schema,
         Block: Block,
-        saveBlockCommitted: saveBlockCommitted
+        saveBlockCommitted: saveBlockCommitted,
+        saveBlockVerified: saveBlockVerified,
+        saveBlockFinalized: saveBlockFinalized
     };
 }
 

@@ -27,31 +27,28 @@ const Exchange30 = (web3, db, address) => {
 
                     const block = {
                         exchange: address,
-                        committedAt: e.blockNumber,
-                        blockIdx: e.returnValues.blockIdx,
+                        committedAt: parseInt(e.blockNumber),
+                        blockIdx: parseInt(e.returnValues.blockIdx),
                         blockType: "Deposits",
                         blockSize: 100,
                         blockVersion: 0,
                         transactionHash: e.transactionHash,
                     };
-
                     await blocks.saveBlockCommitted(block)
-
-                    eventObjects.push(block);
-
                 } else if (e.event === "BlockVerified") {
-                    eventObjects.push({
+                   const block = {
                         exchange: address,
-                        verifiedAt: e.blockNumber,
-                        blockIdx: e.returnValues.blockIdx
-                    });
+                        blockIdx: parseInt(e.returnValues.blockIdx),
+                        verifiedAt: parseInt(e.blockNumber)
+                    };
+                    await blocks.saveBlockVerified(block);
                 } else if (e.event === "BlockFinalized") {
-                    eventObjects.push({
-                        type: e.event,
+                    const finalized = {
                         exchange: address,
-                        finalizedAt: e.blockNumber,
-                        blockIdx: e.returnValues.blockIdx
-                    });
+                        blockIdx: parseInt(e.returnValues.blockIdx),
+                        finalizedAt: parseInt(e.blockNumber)
+                    };
+                    await blocks.saveBlockFinalized(block);
                 } else if (e.event === "DepositRequested") {
                     eventObjects.push({
                         type: e.event,
